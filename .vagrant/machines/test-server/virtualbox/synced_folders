@@ -1,1 +1,0 @@
-{"rsync":{"/vagrant":{"type":"rsync","rsync_auto":"true","rsync_exclude":[".git/",".vagrant/",".gitignore","Vagrantfile"],"guestpath":"/vagrant","hostpath":"/VML-pool/git/Otus-systemd","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
