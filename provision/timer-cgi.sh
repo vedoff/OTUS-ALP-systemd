@@ -1,6 +1,9 @@
 #!/bin/bash
 
+# -------------! Задание № 1 !-----------------------------
+
 # Реализация отслеживания в логе слова ALERT и запись этого события в лог messages
+# Созание параметров отслеживания. Параметры заносятся в файл /etc/sysconfig/watchlog
 
 sudo cat << EOF > /etc/sysconfig/watchlog
 # Configuration file for my watchdog service
@@ -10,7 +13,7 @@ WORD="ALERT"
 LOG=/var/log/watchlog.log
 EOF
 
-# Лог файл который отслеживаем
+#  Генерация лог файл который отслеживаем
 
 sudo cat << EOF > /var/log/watchlog.log
 ALERT Feb 26 16:49:27 terraform-instance systemd: Started My watchlog service.
@@ -58,7 +61,12 @@ Unit=watchlog.service
 [Install]
 WantedBy=multi-user.target
 EOF
+
+# Даем права на исполнение отслеживающего скрипта /opt/watchlog.sh
+
 sudo chmod +x /opt/watchlog.sh
+
+# --------------! Задание № 2 !-------------------------------
 
 # переписать init-скрипт на unit-файл
 # Установка необходтмых компанентов
