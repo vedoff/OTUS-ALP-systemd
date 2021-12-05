@@ -33,6 +33,7 @@ EOF
 sudo cat << EOF > /etc/sysconfig/httpd-first
 OPTIONS=-f conf/first.conf
 EOF
+# Добавляем конфиг для запуска httpd first.conf
 sudo cat << EOF > /etc/httpd/conf/first.conf
 PidFile /var/run/httpd-first.pid
 Listen 8000
@@ -43,7 +44,7 @@ EOF
 sudo cat << EOF > /etc/sysconfig/httpd-second
 OPTIONS=-f conf/second.conf
 EOF
-
+# Добавляем конфиг для запуска httpd second.conf
 sudo cat << EOF > /etc/httpd/conf/second.conf
 PidFile /var/run/httpd-second.pid
 Listen 8080

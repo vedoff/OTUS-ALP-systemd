@@ -98,4 +98,4 @@ sudo systemctl start watchlog
 sudo systemctl start watchlog.timer
 sudo systemctl enable watchlog.timer
 sudo systemctl status watchlog.timer
-sudo tail -f /var/log/messages
+#sudo tail -f /var/log/messages

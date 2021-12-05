@@ -20,6 +20,7 @@ Vagrant.configure(2) do |config|
           type: "rsync",
           rsync_auto: "true",
           rsync_exclude: [".git/",".vagrant/",".gitignore","Vagrantfile"]
-          server.vm.provision "shell", path: "provision/systemd-test.sh"
+          server.vm.provision "shell", path: "provision/timer-cgi.sh"
+          server.vm.provision "shell", path: "provision/httpd-multi.sh"
     end
 end
