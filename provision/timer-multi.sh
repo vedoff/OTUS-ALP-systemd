@@ -10,12 +10,15 @@ WORD="ALERT"
 LOG=/var/log/watchlog.log
 EOF
 
-
+# Лог файл который отслеживаем
 
 sudo cat << EOF > /var/log/watchlog.log
 ALERT Feb 26 16:49:27 terraform-instance systemd: Started My watchlog service.
 ALERT Feb 26 16:48:57 terraform-instance systemd: Started My watchlog service.
 EOF
+
+# Скрипт читающий входящий лог файл /var/log/watchlog.log и отслеживающий
+# ключевое слово ALERT, а также пишет данные в лог если найдено совпадение.
 
 sudo cat << EOF > /opt/watchlog.sh
 #!/bin/bash
@@ -30,6 +33,8 @@ exit 0
 fi
 EOF
 
+# Служба запускающая скрипт /opt/watchlog.sh обработки лог файла /var/log/watchlog.log
+
 sudo cat << EOF > /etc/systemd/system/watchlog.service
 [Unit]
 Description=My watchlog service
@@ -41,6 +46,8 @@ ExecStart=/opt/watchlog.sh \$WORD \$LOG
 WantedBy=multi-user.target
 EOF
 
+# Служба таймера запускающая службу watchlog каждые 30 секунд.
+
 sudo cat << EOF > /etc/systemd/system/watchlog.timer
 [Unit]
 Description=Run watchlog script every 30 second
@@ -51,11 +58,10 @@ Unit=watchlog.service
 [Install]
 WantedBy=multi-user.target
 EOF
-
-sudo systemctl start watchlog.timer
+sudo chmod +x /opt/watchlog.sh
 
 # переписать init-скрипт на unit-файл
-
+# Установка необходтмых компанентов
 sudo yum install epel-release -y && sudo yum install spawn-fcgi php php-cli mod_fcgid httpd -y
 
 # Удаление # в строках которые начинаются с SOCKET и OPTIONS в файле spawn-fcgi
@@ -79,63 +85,17 @@ KillMode=process
 WantedBy=multi-user.target
 EOF
 
+# Запускаем сервисы
+# Старо spawn-fcgi
+systemctl daemon-reload
 sudo systemctl start spawn-fcgi
+sudo systemctl enable spawn-fcgi
 sudo systemctl status spawn-fcgi
 
-# Дополнить юнит-файл apache httpd возможностью запустить несколько инстансов сервера с разными конфигами
-#sudo sed -i 's!EnvironmentFile=/etc/sysconfig/httpd!EnvironmentFile=/etc/sysconfig/httpd/%I!' /usr/lib/systemd/system/httpd.service
-
-sudo sed -i '/Listen 80/d' /etc/httpd/conf/httpd.conf
-
-# Создаем Unit для запуска Apach
-
-sudo cat << EOF > /etc/systemd/system/httpd@.service
-[Unit]
-Description=The Apache HTTP Server
-After=network.target remote-fs.target nss-lookup.target
-Documentation=man:httpd(8)
-Documentation=man:apachectl(8)
-
-[Service]
-Type=notify
-EnvironmentFile=/etc/sysconfig/%I
-ExecStart=/usr/sbin/httpd \$OPTIONS -DFOREGROUND
-ExecReload=/usr/sbin/httpd \$OPTIONS -k graceful
-ExecStop=/bin/kill -WINCH \${MAINPID}
-KillSignal=SIGCONT
-PrivateTmp=true
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-
-
-# Добавляем конфигурационный файл окружения №1
-
-sudo cat << EOF > /etc/sysconfig/httpd-first
-OPTIONS=-f conf/first.conf
-EOF
-sudo cat << EOF > /etc/httpd/conf/first.conf
-PidFile /var/run/httpd-first.pid
-Listen 8000
-EOF
-
-# Добавляем конфигурационный файл окружения №2
-
-sudo cat << EOF > /etc/sysconfig/httpd-second
-OPTIONS=-f conf/second.conf
-EOF
-
-sudo cat << EOF > /etc/httpd/conf/second.conf
-PidFile /var/run/httpd-second.pid
-Listen 8080
-EOF
-
-sudo systemctl daemon-reload
-
-sudo systemctl start httpd@first
-sudo systemctl start httpd@second
-sudo ss -tnulp | grep httpd
-
-
+# Старт watchlog.timer
+sudo systemctl enable watchlog
+sudo systemctl start watchlog
+sudo systemctl start watchlog.timer
+sudo systemctl enable watchlog.timer
+sudo systemctl status watchlog.timer
+sudo tail -f /var/log/messages
