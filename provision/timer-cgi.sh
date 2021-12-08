@@ -94,7 +94,7 @@ WantedBy=multi-user.target
 EOF
 
 # Запускаем сервисы
-# Старо spawn-fcgi
+# Старт spawn-fcgi
 systemctl daemon-reload
 sudo systemctl start spawn-fcgi
 sudo systemctl enable spawn-fcgi

@@ -51,5 +51,7 @@ sudo sh -c "echo 'PidFile /var/run/httpd-second.pid' >> /etc/httpd/conf/second.c
 # Запускаем сервисы проверяем.
 sudo systemctl daemon-reload
 sudo systemctl start httpd@first
+sudo systemctl enable httpd@first
 sudo systemctl start httpd@second
+sudo systemctl enable httpd@second
 sudo ss -tnulp
