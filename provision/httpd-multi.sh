@@ -14,8 +14,7 @@ Documentation=man:apachectl(8)
 
 [Service]
 Type=notify
-EnvironmentFile=/etc/sysconfig/httpd-first
-EnvironmentFile=/etc/sysconfig/httpd-second
+EnvironmentFile=/etc/sysconfig/httpd-%I
 ExecStart=/usr/sbin/httpd \$OPTIONS -DFOREGROUND
 ExecReload=/usr/sbin/httpd \$OPTIONS -k graceful
 ExecStop=/bin/kill -WINCH \${MAINPID}
@@ -26,18 +25,17 @@ PrivateTmp=true
 WantedBy=multi-user.target
 EOF
 
-
-
 # Добавляем конфигурационный файл окружения №1
 
 sudo cat << EOF > /etc/sysconfig/httpd-first
 OPTIONS=-f conf/first.conf
 EOF
 # Добавляем конфиг для запуска httpd first.conf
-sudo cat << EOF > /etc/httpd/conf/first.conf
-PidFile /var/run/httpd-first.pid
-Listen 8000
-EOF
+
+sudo cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/first.conf
+sudo sed -i 's/Listen 80/Listen 8000/g' /etc/httpd/conf/first.conf
+sudo sh -c "echo 'PidFile /var/run/httpd-first.pid' >> /etc/httpd/conf/first.conf"
+
 
 # Добавляем конфигурационный файл окружения №2
 
@@ -45,13 +43,13 @@ sudo cat << EOF > /etc/sysconfig/httpd-second
 OPTIONS=-f conf/second.conf
 EOF
 # Добавляем конфиг для запуска httpd second.conf
-sudo cat << EOF > /etc/httpd/conf/second.conf
-PidFile /var/run/httpd-second.pid
-Listen 8080
-EOF
+
+sudo cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/second.conf
+sudo sed -i 's/Listen 80/Listen 8001/g' /etc/httpd/conf/second.conf
+sudo sh -c "echo 'PidFile /var/run/httpd-second.pid' >> /etc/httpd/conf/second.conf"
 
 # Запускаем сервисы проверяем.
 sudo systemctl daemon-reload
 sudo systemctl start httpd@first
 sudo systemctl start httpd@second
-sudo ss -tnulp | grep httpd
+sudo ss -tnulp

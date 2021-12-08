@@ -6,14 +6,14 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 
 Vagrant.configure(2) do |config|
   # ПЕРВАЯ ВИРТУАЛЬНАЯ МАШИНА
-    config.vm.define "test-server" do |server|
+    config.vm.define "test-bash" do |server|
     # имя виртуальной машины
     server.vm.box = 'vedoff/centos-7-5' 
     server.vm.provider "virtualbox" do |vb|
-      vb.name = "test-server"
+      vb.name = "test-bash"
     end
     # hostname виртуальной машины
-    server.vm.hostname = "test-server"
+    server.vm.hostname = "test-bash"
     # настройки сети
     server.vm.network "private_network", ip: "192.168.56.210"
     server.vm.synced_folder ".", "/vagrant",  
